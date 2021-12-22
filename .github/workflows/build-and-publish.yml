@@ -9,7 +9,7 @@ on:
       - created
       
 env:
-  DOCKER_IMAGE_NAME: sylvanld/update-ovh-dynhost  
+  DOCKER_IMAGE_NAME: bukington/update-ovh-dynhost  
   RELEASE_TAG: ${GITHUB_REF/refs\/tags\//}
   
 
