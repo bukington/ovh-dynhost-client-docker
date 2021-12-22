@@ -7,8 +7,9 @@
 
 [ -z $DEBUG ] && DEBUG=0
 
+CACHE_FILE="/dynhost/cached_address"
 # retrieve last known (cached) address and current public address
-CACHED_IP_ADDRESS=$(cat /dynhost/cached_address 2>/dev/null)
+CACHED_IP_ADDRESS=$(cat $CACHE_FILE 2>/dev/null)
 PUBLIC_IP_ADDRESS=$(dig @resolver4.opendns.com myip.opendns.com +short)
 
 # compare current address to cached one to avoid useless updates
@@ -23,7 +24,7 @@ then
         echo "$(date +"%Y-%m-%d/%T") - INFO - OVH response: ${ovh_response}"
     done
     # cache address for comparison, to avoid useless updates
-    echo $PUBLIC_IP_ADDRESS > cached_address
+    echo $PUBLIC_IP_ADDRESS > $CACHE_FILE
 else
     [ "$DEBUG" = "1" ] && echo "$(date +"%Y-%m-%d/%T") - DEBUG  - No changes detected"
 fi
