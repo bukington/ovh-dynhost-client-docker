@@ -5,6 +5,8 @@
 [ -z $IDENTIFIER ] && echo You need to set environment variable IDENTIFIER && exit
 [ -z $PASSWORD ] && echo You need to set environment variable PASSWORD && exit
 
+[ -z $DEBUG ] && DEBUG=0
+
 # retrieve last known (cached) address and current public address
 CACHED_IP_ADDRESS=$(cat /dynhost/cached_address 2>/dev/null)
 PUBLIC_IP_ADDRESS=$(dig @resolver4.opendns.com myip.opendns.com +short)
@@ -23,5 +25,5 @@ then
     # cache address for comparison, to avoid useless updates
     echo $PUBLIC_IP_ADDRESS > cached_address
 else
-    echo "$(date +"%Y-%m-%d/%T") - DEBUG  - No changes detected"
+    [ "$DEBUG" = "1" ] && echo "$(date +"%Y-%m-%d/%T") - DEBUG  - No changes detected"
 fi
