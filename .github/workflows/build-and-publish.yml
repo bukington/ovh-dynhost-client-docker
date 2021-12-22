@@ -9,8 +9,8 @@ on:
       - created
       
 env:
-  DOCKER_IMAGE_NAME: bukington/update-ovh-dynhost  
-  RELEASE_TAG: ${GITHUB_REF/refs\/tags\//}
+  RELEASE_TAG: ${GITHUB_REF##*/}
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/update-ovh-dynhost
   
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -25,6 +25,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
             
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
@@ -34,7 +38,7 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.3.0
         with:
-          tags: ${{secrets.DOCKER_REGISTRY_URL}}/${{ env.IMAGE_NAME }}:latest,${{secrets.DOCKER_REGISTRY_URL}}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_TAG }}
+          tags: ${{ env.DOCKER_IMAGE }}:latest,${{ env.DOCKER_IMAGE }}:${{ steps.get_version.outputs.VERSION }}
           push: true
       
       - name: Docker Hub Description
@@ -42,7 +46,7 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERHUB_REPOSITORY: ${{secrets.DOCKER_REGISTRY_URL}}/${{ env.DOCKER_IMAGE_NAME }}
+          DOCKERHUB_REPOSITORY:  ${{ env.DOCKER_IMAGE }}
   
          
   build-arm:
